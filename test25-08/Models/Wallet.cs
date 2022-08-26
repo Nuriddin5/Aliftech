@@ -1,11 +1,14 @@
-﻿namespace test25_08.Models;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace test25_08.Models;
 
 public class Wallet
 {
     public int Id { get; set; }
-    
-    public User? Owner { get; set; }
+
+
+    [JsonIgnore] public User? Owner { get; set; }
 
     public double Balance { get; set; }
-
 }

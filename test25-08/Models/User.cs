@@ -1,20 +1,18 @@
-﻿namespace test25_08.Models;
+﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
 
-public class User
+namespace test25_08.Models;
+
+public class User : IdentityUser
 {
-    public int Id { get; set; }
+    public int NumberId { get; set; }
 
-    public string? FullName { get; set; }
+    public string? FullName { get; set;}
 
-    public string? Email { get; set; }
+    public string? PassportNumber { get; set; }
 
-    public string? Password { get; set; }
+    public DateTime BorNDate { get; set; }
 
-    public virtual DateTime? LastLoginTime { get; set; }
-
-    public virtual DateTime? RegistrationDate { get; set; }
-
-    public Wallet2 Wallet2 { get; set; }
-
-    // public bool IsBlocked { get; set; }
+    public bool IsAuthenticated { get; set; }
+    
 }
