@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using test25_08;
 using test25_08.Models;
+using test25_08.Service;
 
 namespace test25_08.Controllers
 {
@@ -15,16 +10,30 @@ namespace test25_08.Controllers
     public class WalletController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWalletService _walletService;
 
-        public WalletController(ApplicationDbContext context)
+        public WalletController(ApplicationDbContext context, IWalletService walletService)
         {
             _context = context;
+            _walletService = walletService;
         }
 
         [HttpGet("checkWalletAccountExists{walletId}")]
-        public ActionResult<bool> CheckWalletAccountExists(int walletId)
+        public ActionResult<WalletExistsResponse> CheckWalletAccountExists(int walletId)
         {
-            throw new NotImplementedException();
+            if (_context.Wallet == null)
+            {
+                return NotFound();
+            }
+
+            if (!WalletExists(walletId))
+            {
+                return new WalletExistsResponse(false, $"Wallet with {walletId} id not found");
+            }
+            else
+            {
+                return new WalletExistsResponse(true, $"Wallet with {walletId} id is exists");
+            }
         }
 
         [HttpPost("replenishWallet")]
@@ -34,7 +43,7 @@ namespace test25_08.Controllers
         }
 
         [HttpGet("GetMonthRecharge{month}/{year}")]
-        public ActionResult<double> GetMonthRecharge(int month,int year)
+        public ActionResult<double> GetMonthRecharge(int month, int year)
         {
             throw new NotImplementedException();
         }
@@ -57,7 +66,7 @@ namespace test25_08.Controllers
             return await _context.Wallet.ToListAsync();
         }
 
-        // GET: api/Wallet/5
+        // GET: api/v1/Wallet/1
         [HttpGet("{id}")]
         public async Task<ActionResult<Wallet>> GetWallet(int id)
         {
@@ -76,8 +85,7 @@ namespace test25_08.Controllers
             return wallet;
         }
 
-        // PUT: api/Wallet/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // PUT: api/v1/Wallet/1
         [HttpPut("{id}")]
         public async Task<IActionResult> PutWallet(int id, Wallet wallet)
         {
@@ -108,7 +116,6 @@ namespace test25_08.Controllers
         }
 
         // POST: api/Wallet
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Wallet>> PostWallet(Wallet wallet)
         {
@@ -123,7 +130,7 @@ namespace test25_08.Controllers
             return CreatedAtAction("GetWallet", new { id = wallet.Id }, wallet);
         }
 
-        // DELETE: api/Wallet/5
+        // DELETE: api/Wallet/1
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteWallet(int id)
         {

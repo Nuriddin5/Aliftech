@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using test25_08;
 using Microsoft.Extensions.DependencyInjection;
 using test25_08.Models;
+using test25_08.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<User, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddSingleton<IWalletService, WalletService>();
+
 
 var app = builder.Build();
 
