@@ -19,7 +19,7 @@ namespace test25_08.Controllers
         }
 
         [HttpGet("checkWalletAccountExists{walletId}")]
-        public ActionResult<WalletExistsResponse> CheckWalletAccountExists(int walletId)
+        public ActionResult<WalletResponse> CheckWalletAccountExists(int walletId)
         {
             if (_context.Wallet == null)
             {
@@ -28,11 +28,11 @@ namespace test25_08.Controllers
 
             if (!WalletExists(walletId))
             {
-                return new WalletExistsResponse(false, $"Wallet with {walletId} id not found");
+                return new WalletResponse(false, $"Wallet with {walletId} id not found");
             }
             else
             {
-                return new WalletExistsResponse(true, $"Wallet with {walletId} id is exists");
+                return new WalletResponse(true, $"Wallet with {walletId} id is exists");
             }
         }
 
@@ -49,9 +49,23 @@ namespace test25_08.Controllers
         }
 
         [HttpGet("getWalletBalance{walletId}")]
-        public ActionResult<double> GetWalletBalance(int walletId)
+        public ActionResult<WalletResponse> GetWalletBalance(int walletId)
         {
-            throw new NotImplementedException();
+            if (_context.Wallet == null)
+            {
+                return NotFound();
+            }
+
+            if (!WalletExists(walletId))
+            {
+                return new WalletResponse($"Wallet with {walletId} id not found");
+            }
+            else
+            {
+                var wallet = _context.Wallet.Find(walletId);
+                if (wallet != null) return new WalletResponse(property: wallet.Balance);
+                return Problem("Thats wrong please try soon");
+            }
         }
 
 
