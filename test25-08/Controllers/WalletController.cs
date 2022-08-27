@@ -34,7 +34,7 @@ namespace test25_08.Controllers
         }
 
         [HttpGet("GetMonthRecharge{month}/{year}")]
-        public ActionResult<double> GetMonthRecharge(int date,int year)
+        public ActionResult<double> GetMonthRecharge(int month,int year)
         {
             throw new NotImplementedException();
         }
