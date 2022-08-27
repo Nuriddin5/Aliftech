@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using test25_08.Models;
 using test25_08.Service;
@@ -37,9 +39,23 @@ namespace test25_08.Controllers
         }
 
         [HttpPost("replenishWallet")]
-        public ActionResult<ReplenishResponse> ReplenishWallet(int walletId, double amount)
+        public ActionResult<WalletResponse> ReplenishWallet(int walletId, double amount)
         {
-            throw new NotImplementedException();
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // var currentUser = _userManager.FindByIdAsync(userId).Result;
+            // if (currentUser == null)
+            // {
+            //     return Unauthorized();
+            // }
+            // if (currentUser.IsAuthenticated)
+            // {
+            //     return _walletService.replenishForAuthentificated(walletId, amount);
+            // }
+            // else
+            {
+                return _walletService.replenishForNonAuthentificated(walletId, amount);
+            }
+
         }
 
         [HttpGet("GetMonthRecharge{month}/{year}")]
