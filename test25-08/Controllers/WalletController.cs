@@ -20,9 +20,31 @@ namespace test25_08.Controllers
         {
             _context = context;
         }
-        
-        
-        
+
+        [HttpGet("checkWalletAccountExists{walletId}")]
+        public ActionResult<bool> CheckWalletAccountExists(int walletId)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost("replenishWallet")]
+        public ActionResult<ReplenishResponse> ReplenishWallet(int walletId, double amount)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("GetMonthRecharge{month}/{year}")]
+        public ActionResult<double> GetMonthRecharge(int date,int year)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("getWalletBalance{walletId}")]
+        public ActionResult<double> GetWalletBalance(int walletId)
+        {
+            throw new NotImplementedException();
+        }
+
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Wallet>>> GetWallet()
