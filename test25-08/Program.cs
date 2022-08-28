@@ -18,7 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //     .AddEntityFrameworkStores<ApplicationDbContext>()
 //     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<IWalletService, WalletService>();
+builder.Services.AddScoped<IWalletService, WalletService>();
 
 
 var app = builder.Build();

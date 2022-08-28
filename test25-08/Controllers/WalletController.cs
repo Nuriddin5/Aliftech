@@ -1,6 +1,4 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using test25_08.Models;
 using test25_08.Service;
@@ -32,30 +30,25 @@ namespace test25_08.Controllers
             {
                 return new WalletResponse(false, $"Wallet with {walletId} id not found");
             }
-            else
-            {
-                return new WalletResponse(true, $"Wallet with {walletId} id is exists");
-            }
+
+            return new WalletResponse(true, $"Wallet with {walletId} id is exists");
         }
 
         [HttpPost("replenishWallet")]
-        public ActionResult<WalletResponse> ReplenishWallet(int walletId, double amount)
+        public ActionResult<WalletResponse> ReplenishWallet(int userId, int walletId, double amount)
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            // var currentUser = _userManager.FindByIdAsync(userId).Result;
-            // if (currentUser == null)
-            // {
-            //     return Unauthorized();
-            // }
-            // if (currentUser.IsAuthenticated)
-            // {
-            //     return _walletService.replenishForAuthentificated(walletId, amount);
-            // }
-            // else
+            var currentUser = _context.Users?.Find(userId);
+            if (currentUser == null)
             {
-                return _walletService.replenishForNonAuthentificated(walletId, amount);
+                return Unauthorized();
             }
 
+            if (currentUser.IsAuthenticated)
+            {
+                return _walletService.replenishForAuthenticated(walletId, amount);
+            }
+
+            return _walletService.replenishForNonAuthenticated(walletId, amount);
         }
 
         [HttpGet("GetMonthRecharge{month}/{year}")]
@@ -76,12 +69,10 @@ namespace test25_08.Controllers
             {
                 return new WalletResponse($"Wallet with {walletId} id not found");
             }
-            else
-            {
-                var wallet = _context.Wallet.Find(walletId);
-                if (wallet != null) return new WalletResponse(property: wallet.Balance);
-                return Problem("Thats wrong please try soon");
-            }
+
+            var wallet = _context.Wallet.Find(walletId);
+            if (wallet != null) return new WalletResponse(wallet.Balance);
+            return Problem("That's wrong please try soon");
         }
 
 
