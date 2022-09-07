@@ -1,5 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http.Json;
+using Microsoft.EntityFrameworkCore;
 using test25_08;
+using test25_08.Authentication;
 using test25_08.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +24,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IWalletService, WalletService>();
 
+builder.Services
+    .AddAuthentication("BasicAuthHandler")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthHandler>("BasicAuthHandler", _ => { });
+
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+    options.SerializerOptions.WriteIndented = true;
+    options.SerializerOptions.AllowTrailingCommas = true;
+});
+
 
 var app = builder.Build();
 
@@ -29,9 +44,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseHttpsRedirection();
 
+
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

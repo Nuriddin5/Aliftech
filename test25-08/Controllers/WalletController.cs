@@ -148,6 +148,7 @@ namespace test25_08.Controllers
             _context.Wallet.Add(wallet);
             await _context.SaveChangesAsync();
 
+
             return CreatedAtAction("GetWallet", new { id = wallet.Id }, wallet);
         }
 
