@@ -30,27 +30,35 @@ namespace test25_08.Controllers
 
             if (!WalletExists(walletId))
             {
-                return new WalletResponse(false, $"Wallet with {walletId} id not found");
+                return Ok(false);
             }
 
-            return new WalletResponse(true, $"Wallet with {walletId} id is exists");
+            return Ok(true);
         }
 
         [HttpPost("replenishWallet")]
         public ActionResult<WalletResponse> ReplenishWallet(int userId, int walletId, double amount)
         {
             var currentUser = _context.Users?.Find(userId);
+            var wallet = _context.Wallet?.Find(walletId);
+            
             if (currentUser == null)
             {
                 return Unauthorized();
             }
 
-            if (currentUser.IsAuthenticated)
+            
+            if (wallet.Owner.Id != userId)
             {
-                return _walletService.ReplenishForAuthenticated(walletId, amount);
+                return BadRequest("You not owner of this wallet");
             }
 
-            return _walletService.ReplenishForNonAuthenticated(walletId, amount);
+            if (currentUser.IsAuthenticated)
+            {
+                return _walletService.ReplenishForAuthenticated(userId,walletId, amount);
+            }
+
+            return _walletService.ReplenishForNonAuthenticated(userId,walletId, amount);
         }
 
         [HttpGet("GetMonthRecharge{month}/{year}")]
@@ -69,11 +77,11 @@ namespace test25_08.Controllers
 
             if (!WalletExists(walletId))
             {
-                return new WalletResponse($"Wallet with {walletId} id not found");
+                return NotFound(new WalletResponse(false, $"Wallet with {walletId} id not found"));
             }
 
             var wallet = _context.Wallet.Find(walletId);
-            if (wallet != null) return new WalletResponse(wallet.Balance);
+            if (wallet != null) return new WalletResponse(true,wallet.Balance);
             return Problem("That's wrong please try soon");
         }
 
@@ -140,12 +148,15 @@ namespace test25_08.Controllers
 
         // POST: api/Wallet
         [HttpPost]
-        public async Task<ActionResult<Wallet>> PostWallet(Wallet wallet)
+        public async Task<ActionResult<Wallet>> PostWallet(Wallet wallet, int ownerId)
         {
             if (_context.Wallet == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Wallet'  is null.");
             }
+
+            if (_context.Users != null)
+                wallet.Owner = await _context.Users.FindAsync(ownerId);
 
             _context.Wallet.Add(wallet);
             await _context.SaveChangesAsync();

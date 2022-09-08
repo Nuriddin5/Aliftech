@@ -12,9 +12,10 @@ public class WalletService : IWalletService
         _context = context;
     }
     
-    public WalletResponse ReplenishForAuthenticated(int walletId, double amount)
+    public WalletResponse ReplenishForAuthenticated(int userId,int walletId, double amount)
     {
         var wallet = _context.Wallet?.Find(walletId);
+        var user = _context.Users?.Find(userId);
         if (wallet == null )
         {
             return new WalletResponse(false, "Wrong with server,try again later");
@@ -22,13 +23,36 @@ public class WalletService : IWalletService
         if (wallet.Balance + amount <= 100000 )
         {
             wallet.Balance += amount;
-            // var recharge = new Recharge(amount,DateTime.Now, true);
+            var recharge = new Recharge
+            {
+                Recharger = user,
+                Amount = amount,
+                DateTime = DateTime.Now,
+                IsIncome = true
+            };
+
+
+                using (var dbContextTransaction = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        _context.Entry(wallet).State = EntityState.Modified;
+                        _context.SaveChanges();
+
+                        _context.Recharges.Add(recharge);
+                        _context.SaveChanges();
+
+                        dbContextTransaction.Commit();
+                    }
+                    catch (Exception)
+                    {
+                        dbContextTransaction.Rollback();
+                    }
+                }
             
             
-            // _context.Entry(recharge).State = EntityState.Modified;
-            _context.Entry(wallet).State = EntityState.Modified;
-            
-            _context.SaveChanges();
+           
+    
             
             return new WalletResponse(true, $"Wallet successfully replenished to {amount}");
         }
@@ -37,9 +61,10 @@ public class WalletService : IWalletService
         
     }
 
-    public  WalletResponse ReplenishForNonAuthenticated(int walletId, double amount)
+    public  WalletResponse ReplenishForNonAuthenticated(int userId,int walletId, double amount)
     {
         var wallet = _context.Wallet?.Find(walletId);
+        var user = _context.Users?.Find(userId);
         if (wallet == null )
         {
             return new WalletResponse(false, "Wrong with server,try again later");
@@ -47,13 +72,33 @@ public class WalletService : IWalletService
         if (wallet.Balance + amount <= 10000)
         {
             wallet.Balance += amount;
-            // var recharge = new Recharge(amount,DateTime.Now, true);
+            var recharge = new Recharge
+            {
+                Recharger = user,
+                Amount = amount,
+                DateTime = DateTime.Now,
+                IsIncome = true
+            };
             
             
-            // _context.Entry(recharge).State = EntityState.Modified;
-            _context.Entry(wallet).State = EntityState.Modified;
+            using (var dbContextTransaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.Entry(wallet).State = EntityState.Modified;
+                    _context.SaveChanges();
+
+                    _context.Recharges.Add(recharge);
+                    _context.SaveChanges();
+
+                    dbContextTransaction.Commit();
+                }
+                catch (Exception)
+                {
+                    dbContextTransaction.Rollback();
+                }
+            }
             
-            _context.SaveChanges();
             
             return new WalletResponse(true, $"Wallet successfully replenished to {amount}");
         }

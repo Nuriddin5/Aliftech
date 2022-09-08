@@ -2,21 +2,21 @@
 
 public class WalletResponse
 {
-    public WalletResponse(object property, string? message)
+    public WalletResponse(bool property, object? resultOrMessage)
     {
-        Message = message;
-        Property = property;
+        ResultOrMessage = resultOrMessage;
+        Success = property;
     } 
-    public WalletResponse(object property)
+    public WalletResponse(bool property)
     {
-        Property = property;
+        Success = property;
     }
-    public WalletResponse(string? message)
+    public WalletResponse(object? message)
     {
-        Message = message;
+        ResultOrMessage = message;
     }
 
-    public Object? Property { get; set; }
+    public bool? Success { get; set; }
 
-    public string? Message { get; set; }
+    public object? ResultOrMessage { get; set; }
 }

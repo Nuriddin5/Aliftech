@@ -39,7 +39,12 @@ namespace test25_08.Migrations
                     b.Property<bool>("IsIncome")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("RechargerId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RechargerId");
 
                     b.ToTable("Recharges");
                 });
@@ -94,6 +99,15 @@ namespace test25_08.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Wallet");
+                });
+
+            modelBuilder.Entity("test25_08.Models.Recharge", b =>
+                {
+                    b.HasOne("test25_08.Models.User", "Recharger")
+                        .WithMany()
+                        .HasForeignKey("RechargerId");
+
+                    b.Navigation("Recharger");
                 });
 
             modelBuilder.Entity("test25_08.Models.Wallet", b =>

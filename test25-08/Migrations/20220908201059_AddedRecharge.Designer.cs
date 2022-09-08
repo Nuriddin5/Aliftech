@@ -12,7 +12,7 @@ using test25_08;
 namespace test25_08.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220907175258_AddedRecharge")]
+    [Migration("20220908201059_AddedRecharge")]
     partial class AddedRecharge
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,7 +41,12 @@ namespace test25_08.Migrations
                     b.Property<bool>("IsIncome")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("RechargerId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RechargerId");
 
                     b.ToTable("Recharges");
                 });
@@ -96,6 +101,15 @@ namespace test25_08.Migrations
                     b.HasIndex("OwnerId");
 
                     b.ToTable("Wallet");
+                });
+
+            modelBuilder.Entity("test25_08.Models.Recharge", b =>
+                {
+                    b.HasOne("test25_08.Models.User", "Recharger")
+                        .WithMany()
+                        .HasForeignKey("RechargerId");
+
+                    b.Navigation("Recharger");
                 });
 
             modelBuilder.Entity("test25_08.Models.Wallet", b =>
