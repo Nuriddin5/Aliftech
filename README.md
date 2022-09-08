@@ -1,5 +1,6 @@
 # Aliftech
-First : add users and wallets with Post : https://localhost:44358/api/v1/Users and Post : https://localhost:44358/api/v1/Wallet
+First : add users and wallets with swagger Post : https://localhost:44358/api/v1/Users and Post : https://localhost:44358/api/v1/Wallet with commenting [Autorize] in controller 
+
 You should use https://codebeautify.org/hmac-generator for calculate hash request body for X-Didest and https://www.base64encode.org/ for calculating X-UserId
 For calculate hash copy request body what you need in json correct format with key "secret" in may case in project
 For X-UserId user's Id:password encode in above website
