@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using test25_08.DTOs;
 using test25_08.Models;
 using test25_08.Service;
 
@@ -39,32 +40,68 @@ namespace test25_08.Controllers
         [HttpPost("replenishWallet")]
         public ActionResult<WalletResponse> ReplenishWallet(int userId, int walletId, double amount)
         {
+            if (amount <= 0)
+            {
+                return BadRequest("You should enter valid amount");
+            }
             var currentUser = _context.Users?.Find(userId);
-            var wallet = _context.Wallet?.Find(walletId);
-            
             if (currentUser == null)
             {
                 return Unauthorized();
             }
 
-            
-            if (wallet.Owner.Id != userId)
+            if (_context.Wallet == null)
+            {
+                return Problem();
+            }
+
+            try
+            {
+                var wallet = _context.Wallet.First(w => w.Owner != null && w.Owner.Id == userId && w.Id == walletId);
+            }
+            catch (Exception e)
             {
                 return BadRequest("You not owner of this wallet");
             }
 
             if (currentUser.IsAuthenticated)
             {
-                return _walletService.ReplenishForAuthenticated(userId,walletId, amount);
+                return _walletService.ReplenishForAuthenticated(userId, walletId, amount);
             }
 
-            return _walletService.ReplenishForNonAuthenticated(userId,walletId, amount);
+            return _walletService.ReplenishForNonAuthenticated(userId, walletId, amount);
         }
 
         [HttpGet("GetMonthRecharge{month}/{year}")]
-        public ActionResult<double> GetMonthRecharge(int month, int year)
+        public ActionResult<RechargeResponse> GetMonthRecharge(int userId, int walletId, int month, int year)
         {
-            throw new NotImplementedException();
+            if (year > 0 &&  DateTime.Now.Year < year || (DateTime.Now.Year >= year && DateTime.Now.Month < month && month > 0))
+            {
+             return   BadRequest("Enter valid year or month");
+            }  
+            
+            
+            var currentUser = _context.Users?.Find(userId);
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            if (_context.Wallet == null)
+            {
+                return Problem();
+            }
+
+            try
+            {
+                var wallet = _context.Wallet.First(w => w.Owner != null && w.Owner.Id == userId && w.Id == walletId);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("You not owner of this wallet");
+            }
+
+            return Ok(_walletService.GetMonthRecharge(userId, walletId, month, year));
         }
 
         [HttpGet("getWalletBalance{walletId}")]
@@ -81,7 +118,7 @@ namespace test25_08.Controllers
             }
 
             var wallet = _context.Wallet.Find(walletId);
-            if (wallet != null) return new WalletResponse(true,wallet.Balance);
+            if (wallet != null) return new WalletResponse(true, wallet.Balance);
             return Problem("That's wrong please try soon");
         }
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using test25_08.DTOs;
 using test25_08.Models;
 
 namespace test25_08.Service;
@@ -104,5 +106,21 @@ public class WalletService : IWalletService
         }
 
         return new WalletResponse(false, "You cant have balance over 10000");
+    }
+
+    public RechargeResponse GetMonthRecharge(int userId, int walletId, int month, int year)
+    {
+        var recharges = _context.Recharges.Where(e => e.Recharger.Id == userId  && e.DateTime.Year == year && e.DateTime.Month==month && e.IsIncome).ToArray();
+
+
+        var rechargeResponse = new RechargeResponse
+        {
+            Recharges = recharges.ToList(),
+            NumberOfRecharges = recharges.Length,
+            Total = recharges.Select(a => a.Amount).Sum()
+        };
+        
+
+        return rechargeResponse;
     }
 }
