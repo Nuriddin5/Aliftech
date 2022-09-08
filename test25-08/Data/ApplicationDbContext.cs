@@ -16,4 +16,6 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Wallet>? Wallet { get; set; }
     public DbSet<User>? Users { get; set; }
+    
+    public DbSet<Recharge>? Recharges { get; set; }
 }

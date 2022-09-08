@@ -23,6 +23,9 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
     {
         string method = Request.Method;
 
+        //You can(should) calculate X-UserId for request in https://www.base64encode.org/
+        //!!! X-UserId in form  User.Id:User.Password
+        
         if (!Request.Headers.ContainsKey("X-UserId"))
         {
             return AuthenticateResult.Fail("No header found");
@@ -59,6 +62,8 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
                     }
                 }
 
+                //You can(should) calculate X-Digest for request body in
+                //https://codebeautify.org/hmac-generator
                 if (method.Equals("POST"))
                 {
                     string secret = "secret";
@@ -69,12 +74,10 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
                         return AuthenticateResult.Fail("No header found");
                     }
 
-                    var s = await Request.PeekBodyAsync();
+                    var requestBody = await Request.PeekBodyAsync();
 
-                    string replace = s.Replace("\r\n", "\n");
-                    // string replace = Regex.Replace(s, @"\s+", "");
-                    // string replace = s.Replace("\r,","");
-                    if (!headerValue2.Parameter!.Equals(HashString(replace, secret)))
+                    string normalizedBody = requestBody.Replace("\r\n", "\n");
+                    if (!headerValue2.Parameter!.Equals(HashString(normalizedBody, secret)))
                     {
                         return AuthenticateResult.Fail("Request body doesn't match");
                     }
@@ -94,13 +97,13 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
     }
 
 
-    static string HashString(string stringToHash, string hachKey)
+    static string HashString(string stringToHash, string key)
     {
         UTF8Encoding myEncoder = new UTF8Encoding();
-        byte[] key = myEncoder.GetBytes(hachKey);
+        byte[] keyBytes = myEncoder.GetBytes(key);
         byte[] text = myEncoder.GetBytes(stringToHash);
-        HMACSHA1 myHmacsha1 = new HMACSHA1(key);
-        byte[] hashCode = myHmacsha1.ComputeHash(text);
+        HMACSHA1 hmacSha1 = new HMACSHA1(keyBytes);
+        byte[] hashCode = hmacSha1.ComputeHash(text);
         string hash = BitConverter.ToString(hashCode).Replace("-", "");
         return hash.ToLower();
     }

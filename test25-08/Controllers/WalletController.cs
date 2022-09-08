@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using test25_08.Models;
 using test25_08.Service;
@@ -7,6 +8,7 @@ namespace test25_08.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
+    // [Authorize]
     public class WalletController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -45,10 +47,10 @@ namespace test25_08.Controllers
 
             if (currentUser.IsAuthenticated)
             {
-                return _walletService.replenishForAuthenticated(walletId, amount);
+                return _walletService.ReplenishForAuthenticated(walletId, amount);
             }
 
-            return _walletService.replenishForNonAuthenticated(walletId, amount);
+            return _walletService.ReplenishForNonAuthenticated(walletId, amount);
         }
 
         [HttpGet("GetMonthRecharge{month}/{year}")]

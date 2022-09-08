@@ -18,4 +18,14 @@ public class User
     public DateTime BorNDate { get; set; }
 
     public bool IsAuthenticated { get; set; }
+
+    // public User( string? userName, string? password, string? fullName, string? passportNumber, DateTime borNDate, bool isAuthenticated)
+    // {
+    //     UserName = userName;
+    //     Password = password;
+    //     FullName = fullName;
+    //     PassportNumber = passportNumber;
+    //     BorNDate = borNDate;
+    //     IsAuthenticated = isAuthenticated;
+    // }
 }

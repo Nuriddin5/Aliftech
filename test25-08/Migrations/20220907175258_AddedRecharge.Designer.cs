@@ -12,8 +12,8 @@ using test25_08;
 namespace test25_08.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220907023422_changed-user")]
-    partial class changeduser
+    [Migration("20220907175258_AddedRecharge")]
+    partial class AddedRecharge
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,28 @@ namespace test25_08.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+
+            modelBuilder.Entity("test25_08.Models.Recharge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsIncome")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Recharges");
+                });
 
             modelBuilder.Entity("test25_08.Models.User", b =>
                 {

@@ -1,45 +1,14 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
 using test25_08.Models;
 
 namespace test25_08.Controllers
 {
     
-    // public class ClaimRequirementAttribute : TypeFilterAttribute
-    // {
-    //     public ClaimRequirementAttribute(string claimType, string claimValue) : base(typeof(ClaimRequirementFilter))
-    //     {
-    //         Arguments = new object[] {new Claim(claimType, claimValue) };
-    //     }
-    // }
-    //
-    // public class ClaimRequirementFilter : IAuthorizationFilter
-    // {
-    //     readonly Claim _claim;
-    //
-    //     public ClaimRequirementFilter(Claim claim)
-    //     {
-    //         _claim = claim;
-    //     }
-    //
-    //     public void OnAuthorization(AuthorizationFilterContext context)
-    //     {
-    //         var hasClaim = context.HttpContext.User.Claims.Any(c => c.Type == _claim.Type && c.Value == _claim.Value);
-    //         if (!hasClaim)
-    //         {
-    //             context.Result = new ForbidResult();
-    //         }
-    //     }
-    // }
-    
     
     [Route("api/v1/[controller]")]
     [ApiController]
-    [Authorize]
+    // [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -52,7 +21,6 @@ namespace test25_08.Controllers
 
         // GET: api/Users
         [HttpGet]
-        // [ClaimRequirement(MyClaimTypes.Permission, "CanReadResource")]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
           if (_context.Users == null)

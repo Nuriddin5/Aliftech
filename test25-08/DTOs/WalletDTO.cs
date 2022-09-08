@@ -1,4 +1,4 @@
-﻿namespace test25_08.Models;
+﻿namespace test25_08.DTOs;
 
 public class WalletDTO
 {

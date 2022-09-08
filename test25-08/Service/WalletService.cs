@@ -12,7 +12,7 @@ public class WalletService : IWalletService
         _context = context;
     }
     
-    public WalletResponse replenishForAuthenticated(int walletId, double amount)
+    public WalletResponse ReplenishForAuthenticated(int walletId, double amount)
     {
         var wallet = _context.Wallet?.Find(walletId);
         if (wallet == null )
@@ -22,6 +22,10 @@ public class WalletService : IWalletService
         if (wallet.Balance + amount <= 100000 )
         {
             wallet.Balance += amount;
+            // var recharge = new Recharge(amount,DateTime.Now, true);
+            
+            
+            // _context.Entry(recharge).State = EntityState.Modified;
             _context.Entry(wallet).State = EntityState.Modified;
             
             _context.SaveChanges();
@@ -33,7 +37,7 @@ public class WalletService : IWalletService
         
     }
 
-    public  WalletResponse replenishForNonAuthenticated(int walletId, double amount)
+    public  WalletResponse ReplenishForNonAuthenticated(int walletId, double amount)
     {
         var wallet = _context.Wallet?.Find(walletId);
         if (wallet == null )
@@ -43,7 +47,10 @@ public class WalletService : IWalletService
         if (wallet.Balance + amount <= 10000)
         {
             wallet.Balance += amount;
+            // var recharge = new Recharge(amount,DateTime.Now, true);
             
+            
+            // _context.Entry(recharge).State = EntityState.Modified;
             _context.Entry(wallet).State = EntityState.Modified;
             
             _context.SaveChanges();
