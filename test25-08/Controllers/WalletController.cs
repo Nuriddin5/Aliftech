@@ -9,7 +9,7 @@ namespace test25_08.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    // [Authorize]
+    [Authorize]
     public class WalletController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -38,13 +38,13 @@ namespace test25_08.Controllers
         }
 
         [HttpPost("replenishWallet")]
-        public ActionResult<WalletResponse> ReplenishWallet(int userId, int walletId, double amount)
+        public ActionResult<WalletResponse> ReplenishWallet(ReplenishWalletDto replenishWalletDto)
         {
-            if (amount <= 0)
+            if (replenishWalletDto.Amount <= 0)
             {
                 return BadRequest("You should enter valid amount");
             }
-            var currentUser = _context.Users?.Find(userId);
+            var currentUser = _context.Users?.Find(replenishWalletDto.UserId);
             if (currentUser == null)
             {
                 return Unauthorized();
@@ -57,7 +57,7 @@ namespace test25_08.Controllers
 
             try
             {
-                var wallet = _context.Wallet.First(w => w.Owner != null && w.Owner.Id == userId && w.Id == walletId);
+                var wallet = _context.Wallet.First(w => w.Owner != null && w.Owner.Id == replenishWalletDto.UserId && w.Id == replenishWalletDto.WalletId);
             }
             catch (Exception e)
             {
@@ -66,22 +66,22 @@ namespace test25_08.Controllers
 
             if (currentUser.IsAuthenticated)
             {
-                return _walletService.ReplenishForAuthenticated(userId, walletId, amount);
+                return _walletService.ReplenishForAuthenticated(replenishWalletDto.UserId, replenishWalletDto.WalletId, replenishWalletDto.Amount);
             }
 
-            return _walletService.ReplenishForNonAuthenticated(userId, walletId, amount);
+            return _walletService.ReplenishForNonAuthenticated(replenishWalletDto.UserId, replenishWalletDto.WalletId, replenishWalletDto.Amount);
         }
 
-        [HttpGet("GetMonthRecharge{month}/{year}")]
-        public ActionResult<RechargeResponse> GetMonthRecharge(int userId, int walletId, int month, int year)
+        [HttpPost("GetMonthRecharge")]
+        public ActionResult<RechargeResponse> GetMonthRecharge(MonthRechargeDto monthRechargeDto)
         {
-            if (year > 0 &&  DateTime.Now.Year < year || (DateTime.Now.Year >= year && DateTime.Now.Month < month && month > 0))
+            if (monthRechargeDto.Year <= 0 ||  DateTime.Now.Year < monthRechargeDto.Year || DateTime.Now.Month < monthRechargeDto.Month || monthRechargeDto.Month <= 0)
             {
              return   BadRequest("Enter valid year or month");
             }  
             
             
-            var currentUser = _context.Users?.Find(userId);
+            var currentUser = _context.Users?.Find(monthRechargeDto.UserId);
             if (currentUser == null)
             {
                 return Unauthorized();
@@ -94,14 +94,14 @@ namespace test25_08.Controllers
 
             try
             {
-                var wallet = _context.Wallet.First(w => w.Owner != null && w.Owner.Id == userId && w.Id == walletId);
+                var wallet = _context.Wallet.First(w => w.Owner != null && w.Owner.Id == monthRechargeDto.UserId && w.Id == monthRechargeDto.WalletId);
             }
             catch (Exception e)
             {
                 return BadRequest("You not owner of this wallet");
             }
 
-            return Ok(_walletService.GetMonthRecharge(userId, walletId, month, year));
+            return Ok(_walletService.GetMonthRecharge(monthRechargeDto.UserId, monthRechargeDto.WalletId, monthRechargeDto.Month, monthRechargeDto.Year));
         }
 
         [HttpGet("getWalletBalance{walletId}")]

@@ -64,7 +64,7 @@ public class BasicAuthHandler : AuthenticationHandler<AuthenticationSchemeOption
 
                 //You can(should) calculate X-Digest for request body in
                 //https://codebeautify.org/hmac-generator
-                if (method.Equals("POST"))
+                if (!method.Equals("GET") &&  !method.Equals("DELETE"))
                 {
                     string secret = "secret";
                     var headerValue2 = AuthenticationHeaderValue.Parse(Request.Headers["X-Digest"]);
